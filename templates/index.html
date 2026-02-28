@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Story | KathaAI{% endblock %}
+
+{% block content %}
+<section class="hero-grid">
+    <article class="card hero-copy">
+        <p class="eyebrow">Creative Prompt Builder</p>
+        <h1>Turn your idea into a cinematic story</h1>
+        <p class="lead">Craft genre, characters, world, and mood. KathaAI writes your narrative, then gives you audio + PDF in one flow.</p>
+
+        <div class="feature-row">
+            <span class="feature-pill">Story + Voice</span>
+            <span class="feature-pill">Downloadable PDF</span>
+            <span class="feature-pill">Reading Mode</span>
+        </div>
+    </article>
+
+    <article class="card hero-form-wrap">
+        <form action="{{ url_for('generate') }}" method="post" class="story-form">
+            <label for="genre">Genre</label>
+            <input type="text" id="genre" name="genre" placeholder="Fantasy, Mystery, Adventure..." required>
+
+            <label for="characters">Characters</label>
+            <input type="text" id="characters" name="characters" placeholder="Arjun, Tara, a mysterious guide..." required>
+
+            <label for="setting">Setting</label>
+            <input type="text" id="setting" name="setting" placeholder="Futuristic Kerala in 2050" required>
+
+            <label for="tone">Tone</label>
+            <input type="text" id="tone" name="tone" placeholder="Inspiring, emotional, cinematic" required>
+
+            <label for="length">Length (approx words)</label>
+            <input type="number" id="length" name="length" value="500" min="100" max="1000" required>
+
+            <label for="language">Language</label>
+            <select id="language" name="language" required>
+                <option value="English" selected>English</option>
+                <option value="Malayalam">Malayalam</option>
+            </select>
+
+            <button type="submit">Generate Story</button>
+        </form>
+    </article>
+</section>
+{% endblock %}

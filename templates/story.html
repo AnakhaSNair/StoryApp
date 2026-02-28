@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}Your Story | KathaAI{% endblock %}
+
+{% block content %}
+<section class="card story-card">
+    <p class="chapter-label">Chapter One</p>
+    <h1>{{ genre }} Story</h1>
+    <p class="story-meta">{{ setting }} | {{ tone }} tone | {{ language }}</p>
+
+    <div class="meta-row">
+        <span class="meta-pill">{{ word_count }} words</span>
+        <span class="meta-pill">{{ read_minutes }} min read</span>
+        <button type="button" id="themeToggle" class="btn btn-ghost btn-small">Sepia Mode</button>
+    </div>
+
+    {% if warning %}
+    <p class="notice">{{ warning }}</p>
+    {% endif %}
+
+    <article class="story-text">{{ story }}</article>
+
+    <div class="actions-panel">
+        {% if audio_exists %}
+        <div class="media-box">
+            <h2>Listen to this chapter</h2>
+            <audio controls>
+                <source src="{{ url_for('static', filename='audio/story.mp3') }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        {% endif %}
+
+        <div class="button-row">
+            {% if pdf_exists %}
+            <a class="btn btn-primary" href="{{ url_for('download_pdf') }}">Download PDF</a>
+            {% endif %}
+            <a class="btn btn-ghost" href="{{ url_for('create_page') }}">Create Another Story</a>
+        </div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        const button = document.getElementById("themeToggle");
+        const body = document.body;
+        const root = document.documentElement;
+        const storageKey = "kathaai-theme";
+        let savedTheme = null;
+
+        if (!button) return;
+
+        function getSavedTheme() {
+            try {
+                return window.localStorage.getItem(storageKey);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function setSavedTheme(value) {
+            try {
+                window.localStorage.setItem(storageKey, value);
+            } catch (e) {
+                // Ignore storage errors and keep in-memory behavior.
+            }
+        }
+
+        function applyTheme(theme) {
+            const isSepia = theme === "sepia";
+            body.classList.toggle("sepia-mode", isSepia);
+            root.classList.toggle("sepia-mode", isSepia);
+
+            if (isSepia) {
+                button.textContent = "Classic Mode";
+            } else {
+                button.textContent = "Sepia Mode";
+            }
+        }
+
+        savedTheme = getSavedTheme();
+        const initial = savedTheme || "classic";
+        applyTheme(initial);
+
+        button.addEventListener("click", function () {
+            const next = body.classList.contains("sepia-mode") ? "classic" : "sepia";
+            setSavedTheme(next);
+            applyTheme(next);
+        });
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Welcome | KathaAI{% endblock %}
+
+{% block content %}
+<section class="landing-shell">
+    <article class="card landing-card">
+        <p class="eyebrow">Welcome To KathaAI</p>
+        <h1>Let's create stories your readers will remember</h1>
+        <p class="lead">Build characters, worlds, and emotions in seconds. Start with your idea, then get a complete story, audio narration, and a downloadable PDF.</p>
+
+        <div class="landing-actions">
+            <a class="btn btn-primary btn-large js-enter-create" href="{{ url_for('create_page') }}">Start Creating</a>
+            <a class="btn btn-ghost btn-large" href="#how">How It Works</a>
+        </div>
+
+        <div class="feature-row">
+            <span class="feature-pill">Fast Story Drafting</span>
+            <span class="feature-pill">Audio Narration</span>
+            <span class="feature-pill">Printable PDF</span>
+        </div>
+    </article>
+
+    <section id="how" class="landing-steps">
+        <article class="card step-card">
+            <h2>1. Describe your idea</h2>
+            <p>Pick genre, tone, characters, setting, and preferred length.</p>
+        </article>
+        <article class="card step-card">
+            <h2>2. Generate instantly</h2>
+            <p>KathaAI writes your story and estimates reading time for easy consumption.</p>
+        </article>
+        <article class="card step-card">
+            <h2>3. Listen or download</h2>
+            <p>Play audio narration and export your story as a clean PDF.</p>
+        </article>
+    </section>
+</section>
+
+<script>
+    (function () {
+        const link = document.querySelector(".js-enter-create");
+        if (!link) return;
+
+        link.addEventListener("click", function (event) {
+            event.preventDefault();
+            document.body.classList.add("page-leaving");
+            window.setTimeout(function () {
+                window.location.href = link.href;
+            }, 320);
+        });
+    })();
+</script>
+{% endblock %}
