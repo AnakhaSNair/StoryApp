@@ -1,4 +1,4 @@
-# KathaAI StoryApp
+﻿# KathaAI StoryApp
 
 A Flask app that generates stories from your prompt and provides:
 - AI story generation (Hugging Face Router)
@@ -10,9 +10,7 @@ A Flask app that generates stories from your prompt and provides:
 
 ## Screenshots
 
-![OUR STORIES!!!](Screenshots/Screenshot%202026-02-28%20100832.png)
-![OUR STORIES!!!](Screenshots/Screenshot%202026-02-28%20100858.png)
-![OUR STORIES!!!](Screenshots/Screenshot%202026-02-28%20100912.png)
+![Alt text](image-source)
 
 ## Project Structure
 

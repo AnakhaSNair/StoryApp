@@ -1,6 +1,4 @@
 from flask import Flask, render_template, request, send_file
-from gtts import gTTS
-from gtts.tts import gTTSError
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
@@ -70,6 +68,8 @@ def generate_story_hf(prompt, retries=3):
                     return "API Error: Token invalid or expired."
                 if response.status_code == 403:
                     return "API Error: Token lacks required inference permissions."
+                if response.status_code == 402:
+                    return "API Error: Hugging Face credits exhausted."
                 if response.status_code in (404, 422):
                     break
                 if response.status_code != 200:
@@ -121,30 +121,6 @@ def generate_story_fallback(genre, characters, setting, tone, length):
     return " ".join(words)
 
 
-def generate_story_fallback_malayalam(genre, characters, setting, tone, length):
-    target_words = max(120, min(int(length), 900))
-    opening = (
-        f"{setting} എന്ന ലോകത്ത് {characters} ചേർന്ന് ഒരു {tone} ഭാവമുള്ള {genre} യാത്ര തുടങ്ങി. "
-        "ചെറിയൊരു തീരുമാനം അവരുടെ ജീവിതത്തെ വലിയ വഴിത്തിരിവിലേക്ക് നയിച്ചു. "
-    )
-    middle = (
-        "ആരംഭത്തിൽ എല്ലാം ബുദ്ധിമുട്ടായിരുന്നു. ഓരോ വെല്ലുവിളിയും പിൻമാറാൻ പ്രേരിപ്പിച്ചു. "
-        "എന്നാൽ ധൈര്യവും ക്ഷമയും കൂട്ടായ്മയും കൊണ്ട് അവർ ഓരോ പ്രശ്നവും മറികടന്നു. "
-        "പിഴവുകളിൽ നിന്ന് അവർ പഠിച്ചു; അതാണ് അവരെ കൂടുതൽ ശക്തരാക്കിയത്. "
-    )
-    ending = (
-        "അവസാനത്തിൽ അവർ ഭയത്തേക്കാൾ കരുണയെയും സ്വാർത്ഥതയ്ക്കുപകരം ഉത്തരവാദിത്തത്തെയും തിരഞ്ഞെടുത്തു. "
-        "അവരുടെ തീരുമാനം അവരുടെ ജീവിതം മാത്രമല്ല, ചുറ്റുമുള്ളവരുടെ ജീവിതവും മാറ്റിമറിച്ചു. "
-        "ശരിയായ തീരുമാനം എടുക്കാൻ ധൈര്യം കാണിച്ചാൽ നല്ല അവസാനങ്ങൾ സാധ്യമാണെന്നതാണ് ഈ കഥയുടെ പാഠം."
-    )
-
-    text = f"{opening}{middle}{ending}"
-    while len(text.split()) < target_words:
-        text += " " + middle
-
-    words = text.split()[:target_words]
-    return " ".join(words)
-
 
 def estimate_reading_time_minutes(story_text, words_per_minute=190):
     words = len(story_text.split())
@@ -185,23 +161,6 @@ def clean_repeated_sentences(story_text):
         seen.add(normalized)
 
     return " ".join(cleaned) if cleaned else story_text
-
-# ---------------- AUDIO GENERATION ---------------- #
-def generate_audio(story_text, lang="en"):
-    if not isinstance(story_text, str):
-        return False, "Audio skipped: story text is invalid."
-
-    audio_folder = os.path.join(app.static_folder, "audio")
-    os.makedirs(audio_folder, exist_ok=True)
-    audio_path = os.path.join(audio_folder, "story.mp3")
-    try:
-        tts = gTTS(text=story_text, lang=lang)
-        tts.save(audio_path)
-        return True, None
-    except gTTSError:
-        return False, "Audio unavailable: could not connect to Google TTS."
-    except Exception as e:
-        return False, f"Audio unavailable: {str(e)}"
 
 # ---------------- PDF GENERATION ---------------- #
 def generate_pdf(story_text, title="KathaAI Story"):
@@ -257,15 +216,12 @@ def generate():
     characters = request.form.get('characters', 'A hero')
     setting = request.form.get('setting', 'A magical land')
     tone = request.form.get('tone', 'Adventurous')
-    language = request.form.get('language', 'English')
     length = request.form.get('length', '500').strip()
     if not length.isdigit():
         length = "500"
-    if language not in ("English", "Malayalam"):
-        language = "English"
 
     prompt = f"""
-Write a {length} word {genre} story in {language}.
+Write a {length} word {genre} story in English.
 Characters: {characters}
 Setting: {setting}
 Tone: {tone}
@@ -277,38 +233,21 @@ Make it engaging and creative.
 
     if story.startswith("API Error") or story.startswith("Unexpected") or story.startswith("Error"):
         warning = "Online AI service is unavailable right now. Showing offline story mode."
-        if language == "Malayalam":
-            story = generate_story_fallback_malayalam(genre, characters, setting, tone, length)
-        else:
-            story = generate_story_fallback(genre, characters, setting, tone, length)
+        story = generate_story_fallback(genre, characters, setting, tone, length)
 
     story = clean_repeated_sentences(story)
     read_minutes, word_count = estimate_reading_time_minutes(story)
-    audio_lang = "ml" if language == "Malayalam" else "en"
-    audio_ok, audio_message = generate_audio(story, lang=audio_lang)
     generate_pdf(story, title=f"{genre} Story")
-
-    audio_exists = os.path.exists(os.path.join(app.static_folder, "audio", "story.mp3"))
-    if not audio_ok:
-        audio_exists = False
-
-    if audio_message:
-        if warning:
-            warning = f"{warning} {audio_message}"
-        else:
-            warning = audio_message
 
     pdf_exists = os.path.exists("story.pdf")
     return render_template(
         "story.html",
         story=story,
-        audio_exists=audio_exists,
         pdf_exists=pdf_exists,
         warning=warning,
         genre=genre,
         setting=setting,
         tone=tone,
-        language=language,
         read_minutes=read_minutes,
         word_count=word_count,
     )
@@ -320,6 +259,6 @@ def download_pdf():
     return send_file("story.pdf", as_attachment=True)
 
 # ---------------- MAIN ---------------- #
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    app.run(debug=True)
+
