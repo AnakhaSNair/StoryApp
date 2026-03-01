@@ -9,7 +9,7 @@ A Flask app that generates stories from your prompt and provides:
 
 ## Screenshots
 
-![OUR STORIES!!!](C:\Users\ACER\Desktop\StoryApp\Screenshots)
+![STORIES!!!](C:\Users\ACER\Desktop\StoryApp\Screenshots)
 
 ## Project Structure
 
