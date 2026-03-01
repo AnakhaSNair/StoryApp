@@ -24,10 +24,7 @@
         {% if audio_exists %}
         <div class="media-box">
             <h2>Listen to this chapter</h2>
-            <audio controls>
-                <source src="{{ url_for('static', filename='audio/story.mp3') }}" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
+            
         </div>
         {% endif %}
 
