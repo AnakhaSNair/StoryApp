@@ -3,4 +3,3 @@ venv/
 __pycache__/
 *.pyc
 story.pdf
-static/audio/story.mp3

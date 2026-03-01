@@ -3,7 +3,6 @@
 A Flask app that generates stories from your prompt and provides:
 - AI story generation (Hugging Face Router)
 - Offline fallback story mode when API is unavailable
-- Audio narration (`gTTS`)
 - PDF export (`reportlab`)
 - Reading-time and word-count metadata
 - English story support
@@ -25,8 +24,6 @@ StoryApp/
   - story.html
 - static/
   - style.css
-  - audio/
-    - story.mp3 (generated)
 ```
 
 ## Requirements
@@ -34,7 +31,6 @@ StoryApp/
 - Python 3.10+
 - Internet access for:
   - Hugging Face Router (AI story generation)
-  - Google TTS (audio generation)
 
 ## Setup
 
@@ -72,8 +68,7 @@ Open: `http://127.0.0.1:5000`
 1. Go to `/create`
 2. Fill in genre, characters, setting, tone, and length
 3. Submit to generate a story
-4. The app also attempts to generate:
-   - `static/audio/story.mp3`
+4. The app generates:
    - `story.pdf`
 5. Download PDF from `/download_pdf`
 
@@ -81,11 +76,10 @@ Open: `http://127.0.0.1:5000`
 
 - `/` -> Landing page
 - `/create` -> Story input form
-- `/generate` (`POST`) -> Generates story + metadata + audio + PDF
+- `/generate` (`POST`) -> Generates story + metadata + PDF
 - `/download_pdf` -> Downloads generated PDF
 
 ## Notes
 
-- `story.pdf` and `static/audio/story.mp3` are overwritten on each new generation.
-- If Google TTS is unreachable, story generation still succeeds and a warning is shown.
+- `story.pdf` is overwritten on each new generation.
 - If Hugging Face API fails, offline fallback text is generated automatically.

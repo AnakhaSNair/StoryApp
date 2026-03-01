@@ -361,10 +361,6 @@ h1 {
     margin-bottom: 14px;
 }
 
-audio {
-    width: 100%;
-}
-
 .button-row {
     display: flex;
     flex-wrap: wrap;
