@@ -6,7 +6,7 @@
 <section class="card story-card">
     <p class="chapter-label">Chapter One</p>
     <h1>{{ genre }} Story</h1>
-    <p class="story-meta">{{ setting }} | {{ tone }} tone | {{ language }}</p>
+    <p class="story-meta">{{ setting }} | {{ tone }} tone</p>
 
     <div class="meta-row">
         <span class="meta-pill">{{ word_count }} words</span>
@@ -21,13 +21,6 @@
     <article class="story-text">{{ story }}</article>
 
     <div class="actions-panel">
-        {% if audio_exists %}
-        <div class="media-box">
-            <h2>Listen to this chapter</h2>
-            
-        </div>
-        {% endif %}
-
         <div class="button-row">
             {% if pdf_exists %}
             <a class="btn btn-primary" href="{{ url_for('download_pdf') }}">Download PDF</a>

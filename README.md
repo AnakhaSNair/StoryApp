@@ -6,11 +6,11 @@ A Flask app that generates stories from your prompt and provides:
 - Audio narration (`gTTS`)
 - PDF export (`reportlab`)
 - Reading-time and word-count metadata
-- English and Malayalam story support
+- English story support
 
 ## Screenshots
 
-![Alt text](image-source)
+![OUR STORIES!!!](C:\Users\ACER\Desktop\StoryApp\Screenshots)
 
 ## Project Structure
 
@@ -70,7 +70,7 @@ Open: `http://127.0.0.1:5000`
 ## How It Works
 
 1. Go to `/create`
-2. Fill in genre, characters, setting, tone, language, and length
+2. Fill in genre, characters, setting, tone, and length
 3. Submit to generate a story
 4. The app also attempts to generate:
    - `static/audio/story.mp3`
